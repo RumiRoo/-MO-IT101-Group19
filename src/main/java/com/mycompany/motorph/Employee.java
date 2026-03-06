@@ -103,8 +103,11 @@ public class Employee {
         }
     }
 
-    // Data Search
-
+    /*
+    Data Search Section:
+    "displayProfileOnly" cans the Employee Database csv using try-catch,
+    returns employee name, number, and birthday
+    */
     public static boolean displayProfileOnly(String searchId) {
         try {
             java.io.File file = new java.io.File("EmployeeDatabase.csv");
@@ -115,7 +118,7 @@ public class Employee {
                 String line = fileScanner.nextLine();
                 if (line.trim().isEmpty()) continue; 
 
-                // Splits by comma, but ignores commas inside quotation marks
+                // Splits line every comma but ignores commas inside quotation marks
                 String[] columns = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
                 
                 // Safety check for the 19-column file
@@ -129,7 +132,7 @@ public class Employee {
                     String birthday = columns[3].replace("\"", "").trim();
 
                     System.out.println("\nEmployee Number: " + idInFile);
-                    System.out.println("Employee Name: " + lastName + " " + firstName);
+                    System.out.println("Employee Name: " + firstName + " " + lastName);
                     System.out.println("Birthday: " + birthday);
                     
                     fileScanner.close();
@@ -171,7 +174,7 @@ public class Employee {
                     String rateString = columns[18].replace("\"", "").replace(",", "").trim();
                     double hourlyRate = Double.parseDouble(rateString);
                     
-                    calculateSalary(idInFile, lastName + " " + firstName, birthday, hourlyRate);
+                    calculateSalary(idInFile, firstName + " " + lastName, birthday, hourlyRate);
                     
                     if (processAll == false) break; 
                 }
