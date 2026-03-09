@@ -1,0 +1,12 @@
+TEAM DETAILS: 
+For this project, the group adopted a fully collaborative approach rather than assigning fixed sections of the code to individual members. The team conducted regular group calls where we collectively planned, developed, and refined the program starting from the initial stages. During these sessions, we worked together to brainstorm solutions, implement code, troubleshoot errors, and evaluate the outcomes of our work.
+As a result, each member actively contributed throughout all phases of the project, including conceptualization, coding, testing, and improvement of the final output. This collaborative process ensured that responsibilities were shared, ideas were openly discussed, and every member had meaningful participation in the development of the group’s code.
+
+PROGRAM DETAILS: 
+The system begins with a login interface where the user is required to enter a valid username and password. If incorrect credentials are entered, the system will display an “Incorrect username or password” message and prompt the user to try again. Once the login details are verified successfully, the user is directed to the home page.
+On the home page, the user is presented with two options: to enter an employee number or to exit the program. If the user selects the option to enter an employee number, the system will display basic employee information, including the employee’s name, employee number, and birthday, provided that the user is logged in as an employee.
+If the user logs in with payroll staff credentials, they are granted access to the payroll processing feature. Within this section, the payroll staff can choose between two options: processing payroll for a specific employee or for all employees. If a specific employee is selected, the payroll staff must enter the employee number. The system will then display the employee’s name, employee number, birthday, payroll cutoff dates, and salary details, including deductions for each cutoff period. If the entered employee number does not exist in the system, an error message will be displayed indicating that the employee number is invalid.
+After completing the desired operations, the user may choose the exit option, which will terminate the program and close the system.
+
+PROJECT PLAN:
+https://docs.google.com/document/d/10Jwa2El_s_UE0R03GPfXs3zpU760brMNBz0-JcZD6Pg/edit?usp=sharing
