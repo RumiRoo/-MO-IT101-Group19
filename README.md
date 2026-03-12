@@ -9,4 +9,4 @@ If the user logs in with payroll staff credentials, they are granted access to t
 After completing the desired operations, the user may choose the exit option, which will terminate the program and close the system.
 
 PROJECT PLAN:
-https://docs.google.com/document/d/10Jwa2El_s_UE0R03GPfXs3zpU760brMNBz0-JcZD6Pg/edit?usp=sharing
+[https://docs.google.com/document/d/10Jwa2El_s_UE0R03GPfXs3zpU760brMNBz0-JcZD6Pg/edit?usp=sharing](https://docs.google.com/document/d/1uGelzPU-lqDrLQLOTpkrhLwZmhzyDnaWNzE26yfWt4I/edit?usp=sharing)
