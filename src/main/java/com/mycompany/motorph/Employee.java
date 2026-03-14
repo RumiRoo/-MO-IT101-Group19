@@ -17,6 +17,7 @@ public class Employee {
 
     static final String EMP_DB_FILE = "EmployeeDatabase.csv";
     static final String ATTENDANCE_FILE = "Attendance.csv";
+    static final String SSS_TABLE = "SSSTable.csv";
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
@@ -55,11 +56,20 @@ public class Employee {
                 while (!found) {
                     System.out.print("Enter Employee Number: ");
                     String searchId = input.next();
+                    
+                    // This makes sure that the searchId string contains only digits 0 -9
+                    if (!searchId.matches("\\d+")) { // handles invalid inputs like non-digits.
+                    System.out.println("\nNot a valid employee number! Please use numbers only.");
+                    continue; // Goes back to the "Enter..." line
+                    }
+                    
                     found = displayProfileOnly(searchId);
                     if (!found) System.out.println("\nEmployee number not found. Please try again.");
                 }
             } else if (choice.equals("2")) {
                 System.exit(0);
+            } else {
+                System.out.println("Invalid input. Please choose between 1 or 2.");
             }
         }
     }
@@ -76,6 +86,8 @@ public class Employee {
                 processPayrollMenu(input);
             } else if (choice.equals("2")) {
                 System.exit(0);
+            } else { // Error handling: if user inputs neither 1 nor 2
+                System.out.println("Invalid input. Please choose between 1 or 2.");
             }
         }
     }
@@ -95,17 +107,25 @@ public class Employee {
                     System.out.print("Enter employee number: ");
                     String searchId = input.next();
                     
+                    // Error handling: when input contains non-numbers
+                    if (!searchId.matches("\\d+")) {
+                        System.out.println("Invalid input. Employee number must contain only numbers.");
+                        continue; // restarts the loop
+                    }
+                    
                     found = processPayrollLogic(searchId, false);
                     
                     if (!found) {
-                        System.out.println("\nEmployee number " + searchId + " does not exist. Try again.");
+                        System.out.println("\nEmployee number not found. Please try again.");
                     }
                 }    
             } else if (choice.equals("2")) {
                     processPayrollLogic("", true);
             } else if (choice.equals("3")) {
                     System.exit(0);
-            }    
+            } else {
+                System.out.println("Invalid input. Please choose between 1, 2, and 3.");
+            }   
         }
     }
 
