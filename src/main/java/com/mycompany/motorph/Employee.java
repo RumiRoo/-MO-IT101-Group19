@@ -337,11 +337,13 @@ public class Employee {
 
             // Display
             System.out.println("\nCutoff Date: " + months[m] + " 1 to " + months[m] + " 15");
+            System.out.println("----------------------------------------");
             System.out.println("Total Hours Worked: " + h1); // Displays 1 decimal place
             System.out.println("Gross Salary: " + g1);
             System.out.println("Net Salary: " + g1);
 
             System.out.println("\nCutoff Date: " + months[m] + " 16 to " + months[m] + " " + days[m]);
+            System.out.println("----------------------------------------");
             System.out.println("Total Hours Worked: " + h2); // Displays 1 decimal place
             System.out.println("Gross Salary: " + g2);
             System.out.println("Deductions:");
@@ -350,7 +352,7 @@ public class Employee {
             System.out.println("  Pag-IBIG: " + pi);
             System.out.println("  Withholding Tax: " + tax);
             System.out.println("Total Deductions: " + totalDeductions);
-            System.out.printf("NET SALARY: " + netPaySecond + "\n");
+            System.out.println("NET SALARY: " + netPaySecond + "\n");
         }
     }
 
@@ -372,11 +374,12 @@ public class Employee {
                 String idInFile = clean(columns[0]);
                 
                 if (idInFile.equals(searchId)) {
-                    // Column D (Index 3) is Date
-                    String dateString = columns[3].replace("\"", "").trim();
+                    // Column D (Index 3) is Date (format is MM/DD/YYYY)
+                    String dateString = clean(columns[3]);
                     String[] dateParts = dateString.split("/");
-                    int d = Integer.parseInt(dateParts[0]); // ensures that the date column is read correctly
-                    int m = Integer.parseInt(dateParts[1]); // DD/MM/YYYY
+                    
+                    int m = Integer.parseInt(dateParts[0]); // ensures that the date column is read correctly
+                    int d = Integer.parseInt(dateParts[1]); // as the specified format
 
                     boolean isFirstCutoff = (cutoff == 1 && d <= 15);
                     boolean isSecondCutoff = (cutoff == 2 && d > 15);
