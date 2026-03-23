@@ -4,13 +4,17 @@
  */
 package com.mycompany.motorph;
 
-/**
- *
- * @author Alyssa P
+/*
+ * Group 19:
+ * @authors Cerzo, Matthew David
+ *          De Leon, Linkin May
+ *          Gacula, Timothy Justin
+ *          Jamboy, Niño Rey
+ *          Ochoa, Stephanie Maye
+ *          Posilero, Alyssa
  */
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Employee {
@@ -22,14 +26,14 @@ public class Employee {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 
-        System.out.println("MotorPH SIGN-IN PORTAL");
+        System.out.println("MotorPH Sign-in Portal");
         System.out.print("Enter Username: ");
         String username = input.nextLine();
         System.out.print("Enter Password: ");
         String password = input.nextLine();
 
         if ((username.equals("employee") || username.equals("payroll_staff")) && password.equals("12345")) {
-            System.out.println("\nLogin Successful! Welcome, user!");
+            System.out.println("\nLogin successful! Welcome, user!");
             if (username.equals("employee")) {
                 employeeMenu(input);
             } else {
@@ -41,12 +45,12 @@ public class Employee {
         }
     }
 
-    // Menu section
+    // Sub-menus
 
     public static void employeeMenu(Scanner input) {
         while (true) {
-            System.out.println("\nEMPLOYEE MENU");
-            System.out.println("1. Enter your employee number");
+            System.out.println("\nEmployee Menu");
+            System.out.println("1. View Employee Detail");
             System.out.println("2. Exit the program");
             System.out.print("Select an option: ");
             String choice = input.next();
@@ -56,27 +60,22 @@ public class Employee {
                 while (!found) {
                     System.out.print("Enter Employee Number: ");
                     String searchId = input.next();
-                    
-                    // This makes sure that the searchId string contains only digits 0 -9
-                    if (!searchId.matches("\\d+")) { // handles invalid inputs like non-digits.
-                    System.out.println("\nNot a valid employee number! Please use numbers only.");
-                    continue; // Goes back to the "Enter..." line
+                    if (!searchId.matches("\\d+")) { 
+                        System.out.println("\nInvalid format. Numbers only.");
+                        continue; 
                     }
-                    
                     found = displayProfileOnly(searchId);
-                    if (!found) System.out.println("\nEmployee number not found. Please try again.");
+                    if (!found) System.out.println("\nEmployee not found.");
                 }
             } else if (choice.equals("2")) {
                 System.exit(0);
-            } else {
-                System.out.println("Invalid input. Please choose between 1 or 2.");
             }
         }
     }
 
     public static void payrollStaffMenu(Scanner input) {
         while (true) {
-            System.out.println("\nPAYROLL STAFF MENU");
+            System.out.println("\nPayroll Staff Menu");
             System.out.println("1. Process Payroll");
             System.out.println("2. Exit the program");
             System.out.print("Select an option: ");
@@ -86,15 +85,13 @@ public class Employee {
                 processPayrollMenu(input);
             } else if (choice.equals("2")) {
                 System.exit(0);
-            } else { // Error handling: if user inputs neither 1 nor 2
-                System.out.println("Invalid input. Please choose between 1 or 2.");
             }
         }
     }
 
     public static void processPayrollMenu(Scanner input) {
         while (true) {
-            System.out.println("\nProcess Payroll (Note: Do not include allowances)");
+            System.out.println("\nProcess Payroll (Allowances not included)");
             System.out.println("1. One employee");
             System.out.println("2. All employees");
             System.out.println("3. Exit the program");
@@ -102,328 +99,250 @@ public class Employee {
             String choice = input.next();
 
             if (choice.equals("1")) {
-                boolean found = false;
-                while (!found) {
-                    System.out.print("Enter employee number: ");
-                    String searchId = input.next();
-                    
-                    // Error handling: when input contains non-numbers
-                    if (!searchId.matches("\\d+")) {
-                        System.out.println("Invalid input. Employee number must contain only numbers.");
-                        continue; // restarts the loop
-                    }
-                    
-                    found = processPayrollLogic(searchId, false);
-                    
-                    if (!found) {
-                        System.out.println("\nEmployee number not found. Please try again.");
-                    }
-                }    
-            } else if (choice.equals("2")) {
-                    processPayrollLogic("", true);
+                System.out.print("Enter employee number: ");
+                String searchId = input.next();
+                if (searchId.matches("\\d+")) { // trigger for bulleted view of "One Employee"
+                    processPayrollLogic(searchId, false);
+                }
+            } else if (choice.equals("2")) { // trigger for tabular view of "All Employees"
+                processPayrollLogic("", true);
             } else if (choice.equals("3")) {
-                    System.exit(0);
-            } else {
-                System.out.println("Invalid input. Please choose between 1, 2, and 3.");
-            }   
+                System.exit(0);
+            }
         }
     }
 
-    /*
-    Data Search Section:
-    "displayProfileOnly" cans the Employee Database csv using try-catch,
-    returns employee name, number, and birthday
-    */
+    // Data Handling
+
     public static boolean displayProfileOnly(String searchId) {
         try {
-            java.io.File file = new java.io.File("EmployeeDatabase.csv");
-            java.util.Scanner fileScanner = new java.util.Scanner(file);
-            fileScanner.nextLine(); // Skip header
-
+            Scanner fileScanner = new Scanner(new File(EMP_DB_FILE));
+            fileScanner.nextLine(); 
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
-                if (line.trim().isEmpty()) continue; 
-
-                // Splits line every comma but ignores commas inside quotation marks
-                String[] columns = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-                
-                // Safety check for the 19-column file
-                if (columns.length < 19) continue;
-
-                String idInFile = columns[0].replace("\"", "").trim();
-                
-                if (idInFile.equals(searchId)) {
-                    String lastName = columns[1].replace("\"", "").trim();
-                    String firstName = columns[2].replace("\"", "").trim();
-                    String birthday = columns[3].replace("\"", "").trim();
-
-                    System.out.println("\nEmployee Number: " + idInFile);
-                    System.out.println("Employee Name: " + firstName + " " + lastName);
-                    System.out.println("Birthday: " + birthday);
-                    
+                String[] col = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                if (col.length < 19) continue;
+                if (clean(col[0]).equals(searchId)) {
+                    System.out.println("\nEmployee #: " + clean(col[0]));
+                    System.out.println("Employee Name: " + clean(col[2]) + " " + clean(col[1]));
+                    System.out.println("Birthday: " + clean(col[3]));
                     fileScanner.close();
                     return true;
                 }
             }
             fileScanner.close();
-        } catch (java.io.FileNotFoundException e) {
-            System.out.println("EmployeeDatabase.csv was not found in the project folder.");
-        } catch (Exception e) {
-            System.out.println("Error in reading EmployeeDatabase.csv: " + e.getMessage());
-        }
-        
+        } catch (Exception e) { }
         return false;
     }
 
     public static boolean processPayrollLogic(String searchId, boolean processAll) {
         boolean foundAtLeastOne = false;
+        ArrayList<String[]> attendanceList = new ArrayList<>();
+        // Load the entire attendance file into ArrayList for singular reading
+        // Prevents program from opening file 14 times per employee
         
         try {
-            java.io.File file = new java.io.File("EmployeeDatabase.csv");
-            java.util.Scanner fileScanner = new java.util.Scanner(file);
-            fileScanner.nextLine(); // Skip header
+            Scanner attScanner = new Scanner(new File(ATTENDANCE_FILE));
+            if (attScanner.hasNextLine()) attScanner.nextLine();
+            while (attScanner.hasNextLine()) {
+                String line = attScanner.nextLine();
+                if (!line.trim().isEmpty()) attendanceList.add(line.split(","));
+            }
+            attScanner.close(); // Attendance data should be stored in attendanceList so file is closed
+        } catch (Exception e) {
+            System.out.println("Attendance Load Error.");
+        }
+        
+        try {
+            Scanner fileScanner = new Scanner(new File(EMP_DB_FILE));
+            String[] headers = fileScanner.hasNextLine() ? fileScanner.nextLine().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)") : null;
+            
+            // Dynamic Mapping: if columns are changed/added,
+            // program can find Hourly Rate by name instead of position
+            int rateIndex = 18; 
+            if (headers != null) {
+                for (int i = 0; i < headers.length; i++) {
+                    if (clean(headers[i]).equalsIgnoreCase("Hourly Rate")) { rateIndex = i; break; }
+                }
+            }
 
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
-                if (line.trim().isEmpty()) continue;
-
-                String[] columns = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-                if (columns.length < 19) continue; // Must have at least 19 columns
-
-                String idInFile = columns[0].replace("\"", "").trim();
+                String[] col = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                if (col.length <= rateIndex) continue;
+                String idInFile = clean(col[0]);
                 
-                if (processAll == true || idInFile.equals(searchId)) {
+                if (processAll || idInFile.equals(searchId)) {
                     foundAtLeastOne = true;
+                    String name = clean(col[2]) + " " + clean(col[1]);
+                    String bday = clean(col[3]);
+                    double rate = Double.parseDouble(clean(col[rateIndex]).replace(",", ""));
                     
-                    String lastName = columns[1].replace("\"", "").trim();
-                    String firstName = columns[2].replace("\"", "").trim();
-                    String birthday = columns[3].replace("\"", "").trim();
+                    if (processAll) {
+                        System.out.println("\n----------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                        System.out.println("PAYROLL SUMMARY FOR: " + name + " (" + idInFile + ")");
+                        System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                        
+                        // Table Header for "All Employees"
+                        String head = pad("MONTH", 12)
+                                + pad("GROSS SALARY", 22)
+                                + pad("SSS", 18)
+                                + pad("PHILHEALTH", 18)
+                                + pad("PAG-IBIG", 18)
+                                + pad("TAX", 20)
+                                + pad("TOT. DEDUCTIONS", 22)
+                                + "NET PAY";
+                        System.out.println(head);
+                    } else {
+                        // Static profile data printed to prevent repeating inside 7-loop month calc.
+                        System.out.println("\n Employee #: " + idInFile);
+                        System.out.println(" Employee Name: " + name);
+                        System.out.println(" Birthday: " + bday);
+                    }
                     
-                    // Column S (Index 18) is the Hourly Rate
-                    String rateString = columns[18].replace("\"", "").replace(",", "").trim();
-                    double hourlyRate = Double.parseDouble(rateString);
-                    
-                    calculateSalary(idInFile, firstName + " " + lastName, birthday, hourlyRate);
-                    
-                    if (processAll == false) break; 
+                    // pre-loaded attendance list
+                    calculateSalary(idInFile, name, rate, attendanceList, processAll);
+                    if (!processAll) break;
                 }
             }
             fileScanner.close();
-        } catch (Exception e) {
-            System.out.println("Error reading file: " + e.getMessage());
-        }
+        } catch (Exception e) { }
         return foundAtLeastOne;
     }
 
-    // DEDUCTIONS AREA
-    
-    // SSS Contribution Bracket
-    public static double sssContribution(double mGross) {
-        double sss = 0;
-        try {
-            // Use full paths to avoid import issues
-            java.io.File sssFile = new java.io.File("SSSTable.csv");
-            java.util.Scanner sssScanner = new java.util.Scanner(sssFile);
+    // Math & Printing
 
-            if (sssScanner.hasNextLine()) sssScanner.nextLine();
-
-            while (sssScanner.hasNextLine()) {
-                String line = sssScanner.nextLine();
-                if (line.trim().isEmpty()) continue;
-
-                // Using the same splitting logic as before for consistency
-                String[] columns = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-
-                // columns[0] = Lower Bound, columns[2] = Contribution Amount
-                double lowerBound = Double.parseDouble(clean(columns[0]).replace(",", ""));
-                double amount = Double.parseDouble(clean(columns[2]).replace(",", ""));
-
-                if (mGross >= lowerBound) {
-                    sss = amount;
-                }
-            }
-            sssScanner.close();
-        } catch (java.io.FileNotFoundException e) {
-            System.out.println("SSSTable csv file not found.");
-        } catch (Exception e) {
-            System.out.println("System failed to read SSSTable csv file: " + e.getMessage());
-        }
+    public static void calculateSalary(String id, String name, double rate, ArrayList<String[]> attList, boolean processAll) {
+        String[] mo = {"", "", "", "", "", "", "June", "July", "August", "September", "October", "November", "December"};
+        int[] dy = {0, 0, 0, 0, 0, 0, 30, 31, 31, 30, 31, 30, 31}; 
         
-        return sss;
-    }
-    
-    // Philhealth Contribution
-    public static double philhealthContribution(double mGross) {
-        double ph = 0;
-        if (mGross <= 10000) {
-            ph = 300.0 * 0.5;
-        } else if (mGross >= 60000) {
-            ph = 1800 * 0.5;
-        } else {
-            ph = (mGross * 0.03) * 0.5;
-        }
-        return ph;
-    }
-    
-    // Pag-IBIG Contribution
-    public static double pagIbig(double mGross) {
-        double pi = 0;
-        if (mGross <= 1500) {
-            pi = mGross * 0.02;
-        } else {
-            pi = mGross * 0.01;
-        }
-        
-        if (pi > 100.0) {
-            pi = 100.0; // Pag-IBIG can't exceed 100
-        }
-        return pi;
-    }
-    
-    // Withholding Tax
-    public static double withholdingTax(double taxableIncome) {
-        double tax = 0;
-        if (taxableIncome >= 666667) {
-            tax = 200833.33 + (0.35 * (taxableIncome - 666667));
-        } else if (taxableIncome >= 166667) {
-            // 166,667 to 666,666
-            tax = 40833.33 + (0.32 * (taxableIncome - 166667));
-        } else if (taxableIncome >= 66667) {
-            // 66,667 to 166,666
-            tax = 10833.33 + (0.30 * (taxableIncome - 66667));
-        } else if (taxableIncome >= 33333) {
-            // 33,333 to 66,666
-            tax = 2500.00 + (0.25 * (taxableIncome - 33333));
-        } else if (taxableIncome >= 20833) {
-            // 20,833 to 33,332
-            tax = 0 + (0.20 * (taxableIncome - 20833));
-        } else {
-            // 20,832 and below
-            tax = 0;
-        }
-        return tax;
-    }
-    
-    // Salary Computation
-    
-    public static void calculateSalary(String id, String name, String bday, double rate) {
-        String[] months = {"", "", "", "", "", "", "June", "July", "August", "September", "October", "November", "December"};
-        int[] days = {0, 0, 0, 0, 0, 0, 30, 31, 31, 30, 31, 30, 31}; // the zeros represent months January to May
-
-        System.out.println("\nEmployee #: " + id);
-        System.out.println("Employee Name: " + name);
-        System.out.println("Birthday: " + bday);
-
         for (int m = 6; m <= 12; m++) {
-            double h1 = getHours(id, m, 1);
-            double h2 = getHours(id, m, 2);
-            
-            if (h1 == 0 && h2 == 0) continue; // for avoiding the months January to May
+            double h1 = getHours(id, m, 1, attList);
+            double h2 = getHours(id, m, 2, attList);
+            if (h1 == 0 && h2 == 0) continue;
 
-            double g1 = h1 * rate; // 1st cut-off
-            double g2 = h2 * rate; // 2nd cut-off
-            double mGross = g1 + g2; // Gross Monthly Salary
+            double g1 = h1 * rate; 
+            double g2 = h2 * rate; 
+            double mGross = g1 + g2; 
             
-            // Deductions extracted from their methods
             double sss = sssContribution(mGross);
             double ph = philhealthContribution(mGross);
             double pi = pagIbig(mGross);
-            
-            double taxableIncome = mGross - (sss + ph + pi);
-            double tax = withholdingTax(taxableIncome);
-            
-            double totalDeductions = sss + ph + pi + tax;
-            double netPaySecond = g2 - totalDeductions;
+            double tax = withholdingTax(mGross - (sss + ph + pi));
+            double totalDed = sss + ph + pi + tax;
+            double mNet = mGross - totalDed;
 
-            // Display
-            System.out.println("\nCutoff Date: " + months[m] + " 1 to " + months[m] + " 15");
-            System.out.println("----------------------------------------");
-            System.out.println("Total Hours Worked: " + h1); // Displays 1 decimal place
-            System.out.println("Gross Salary: " + g1);
-            System.out.println("Net Salary: " + g1);
+            if (processAll) {
+                // Tabular Month Row for "All Employees"
+                // Instead of printing every information for 7 months per 34 employees
+                // Decluttering
+                String row = pad(mo[m], 12)
+                        + pad("" + mGross, 22)
+                        + pad("" + sss, 18)
+                        + pad("" + ph, 18)
+                        + pad("" + pi, 18)
+                        + pad("" + tax, 20)
+                        + pad("" + totalDed, 22)
+                        + ("" + mNet);
+                System.out.println(row);
+            } else {
+                // Bulleted View for "One Employee" option
+                System.out.println("\n Cutoff Date: " + mo[m] + " 1 to " + mo[m] + " 15");
+                System.out.println(" Total Hours Worked: " + h1);
+                System.out.println(" Gross Salary: " + g1);
+                System.out.println(" Net Salary: " + g1);
 
-            System.out.println("\nCutoff Date: " + months[m] + " 16 to " + months[m] + " " + days[m]);
-            System.out.println("----------------------------------------");
-            System.out.println("Total Hours Worked: " + h2); // Displays 1 decimal place
-            System.out.println("Gross Salary: " + g2);
-            System.out.println("Deductions:");
-            System.out.println("  SSS: " + sss);
-            System.out.println("  PhilHealth: " + ph);
-            System.out.println("  Pag-IBIG: " + pi);
-            System.out.println("  Withholding Tax: " + tax);
-            System.out.println("Total Deductions: " + totalDeductions);
-            System.out.println("NET SALARY: " + netPaySecond + "\n");
+                System.out.println("\n Cutoff Date: " + mo[m] + " 16 to " + mo[m] + " " + dy[m] + " (Second payout includes all deductions)");
+                System.out.println(" Total Hours Worked: " + h2);
+                System.out.println(" Gross Salary: " + g2);
+                System.out.println("  Each Deduction:");
+                System.out.println("    SSS: " + sss);
+                System.out.println("    PhilHealth: " + ph);
+                System.out.println("    Pag-IBIG: " + pi);
+                System.out.println("    Tax: " + tax);
+                System.out.println(" Total Deductions: " + totalDed);
+                System.out.println(" Net Salary: " + (g2 - totalDed));
+            }
         }
     }
 
-    public static double getHours(String searchId, int month, int cutoff) {
-        double totalHours = 0;
-        try {
-            java.io.File file = new java.io.File("Attendance.csv");
-            java.util.Scanner fileScanner = new java.util.Scanner(file);
-            fileScanner.nextLine(); // Skip header
-
-            while (fileScanner.hasNextLine()) {
-                String line = fileScanner.nextLine();
-                if (line.trim().isEmpty()) continue;
-                
-                // Attendance usually doesn't have commas in dates/times, standard split is safe here
-                String[] columns = line.split(",");
-                if (columns.length < 6) continue; // Safety check for 6 columns
-
-                String idInFile = clean(columns[0]);
-                
-                if (idInFile.equals(searchId)) {
-                    // Column D (Index 3) is Date (format is MM/DD/YYYY)
-                    String dateString = clean(columns[3]);
-                    String[] dateParts = dateString.split("/");
+    public static double getHours(String id, int m, int c, ArrayList<String[]> list) {
+        double total = 0;
+        for (String[] col : list) {
+            // Quick filtering to skip unneeded info before computation
+            if (col.length < 6 || !clean(col[0]).equals(id)) continue;
+            String[] dp = clean(col[3]).split("/");
+            if (Integer.parseInt(dp[0]) == m) {
+                int day = Integer.parseInt(dp[1]);
+                if ((c == 1 && day <= 15) || (c == 2 && day > 15)) {                    
+                    // Time parsing delegation to stop redundant parsing
+                    double in = parseT(col[4]), out = parseT(col[5]);
                     
-                    int m = Integer.parseInt(dateParts[0]); // ensures that the date column is read correctly
-                    int d = Integer.parseInt(dateParts[1]); // as the specified format
-
-                    boolean isFirstCutoff = (cutoff == 1 && d <= 15);
-                    boolean isSecondCutoff = (cutoff == 2 && d > 15);
-
-                    if (m == month && (isFirstCutoff || isSecondCutoff)) {
-                        // Column E (Index 4) is Log In, Column F (Index 5) is Log Out
-                        String timeInStr = columns[4].replace("\"", "").trim();
-                        String timeOutStr = columns[5].replace("\"", "").trim();
-
-                        String[] inParts = timeInStr.split(":");
-                        double timeIn = Double.parseDouble(inParts[0]) + (Double.parseDouble(inParts[1]) / 60.0); // for converting times to decimal
-                        
-                        String[] outParts = timeOutStr.split(":");
-                        double timeOut = Double.parseDouble(outParts[0]) + (Double.parseDouble(outParts[1]) / 60.0);
-
-                        if (timeIn <= 8.0833) timeIn = 8.0;
-                        if (timeOut > 17.0) timeOut = 17.0; // no extra hours (5:00PM cap)
-
-                        double dailyHours = (timeOut - timeIn) - 1.0; // lunch break still holds
-                        if (dailyHours > 0) {
-                            totalHours = totalHours + dailyHours; // Total hours worked
-                        }
-                    }
+                    // MotorPH Rules: Grace period and cap logic for time-in and time-out
+                    if (in <= 8.0833) in = 8.0; 
+                    if (out > 17.0) out = 17.0; 
+                    double daily = (out - in) - 1.0;
+                    if (daily > 0) total += daily;
                 }
             }
-            fileScanner.close();
-        } catch (java.io.FileNotFoundException e) {
-            System.out.println("Error: Attendance.csv is missing. Cannot calculate hours.");
-        } catch (Exception e) {
-            System.out.println("Problem reading Attendance.csv: " + e.getMessage());
         }
-        return totalHours;
+        return total;
     }
 
-    // For clean calculation of hours worked (e.g., converting 8:30 AM to 8.5)
+    // Deduction Methods
+
+    public static double sssContribution(double mGross) {
+        double sss = 0;
+        try {
+            Scanner sScanner = new Scanner(new File(SSS_TABLE));
+            sScanner.nextLine();
+            while (sScanner.hasNextLine()) {
+                String[] col = sScanner.nextLine().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                if (mGross >= Double.parseDouble(clean(col[0]).replace(",", ""))) 
+                    sss = Double.parseDouble(clean(col[2]).replace(",", ""));
+            }
+            sScanner.close();
+        } catch (Exception e) { }
+        return sss;
+    }
+
+    public static double philhealthContribution(double mGross) {
+        if (mGross <= 10000) return 150.0;
+        if (mGross >= 60000) return 900.0;
+        return (mGross * 0.03) * 0.5;
+    }
+
+    public static double pagIbig(double mGross) {
+        double pi = (mGross <= 1500) ? mGross * 0.02 : mGross * 0.01;
+        return (pi > 100.0) ? 100.0 : pi;
+    }
+
+    public static double withholdingTax(double taxableIncome) {
+        if (taxableIncome >= 666667) return 200833.33 + (0.35 * (taxableIncome - 666667));
+        if (taxableIncome >= 166667) return 40833.33 + (0.32 * (taxableIncome - 166667));
+        if (taxableIncome >= 66667) return 10833.33 + (0.30 * (taxableIncome - 66667));
+        if (taxableIncome >= 33333) return 2500.00 + (0.25 * (taxableIncome - 33333));
+        if (taxableIncome >= 20833) return (0.20 * (taxableIncome - 20833));
+        return 0;
+    }
+
+    // Others
+    
+    // Centralized utility for converting HH:MM string formats into decimal numbers for math operations
     public static double parseT(String t) {
-        String[] p = t.split(":");
-        return Double.parseDouble(p[0]) + (Double.parseDouble(p[1]) / 60.0); // conversion of HH:mm to raw decimal
+        String[] p = t.replace("\"", "").trim().split(":");
+        return Double.parseDouble(p[0]) + (Double.parseDouble(p[1]) / 60.0); 
     }
 
     public static String clean(String s) {
-        if (s == null) return "";
-        String res = s.trim().replace("\"", "");
-        if (res.startsWith("\uFEFF")) res = res.substring(1);
-        return res;
+        return (s == null) ? "" : s.trim().replace("\"", "").replace("\uFEFF", "");
+    }
+
+    public static String pad(String s, int n) {
+    String res = (s == null) ? "" : s;
+    while (res.length() < n) {
+        res = res + " ";
+    }
+    return res;
     }
 }
